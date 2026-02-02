@@ -1,6 +1,10 @@
 pipeline {
   agent any
 
+  options {
+    skipDefaultCheckout(true)
+  }
+
   stages {
     stage('Checkout') {
       steps {
@@ -26,9 +30,27 @@ pipeline {
       }
     }
 
+    stage('Package') {
+      steps {
+        sh './mvnw -q -DskipTests package'
+      }
+    }
+
     stage('Deploy Artifact to Nexus') {
       steps {
         sh './mvnw -q -DskipTests deploy'
+      }
+    }
+
+    stage('Docker Build') {
+      steps {
+        sh 'docker build -t devopsapp:latest .'
+      }
+    }
+
+    stage('Deploy (docker-compose Spring + MySQL)') {
+      steps {
+        sh 'docker compose up -d --build'
       }
     }
   }
