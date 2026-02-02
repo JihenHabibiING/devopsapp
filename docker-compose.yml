@@ -1,0 +1,35 @@
+services:
+  mysql:
+    image: mysql:8
+    container_name: mysql_devopsapp
+    environment:
+      MYSQL_DATABASE: appdb
+      MYSQL_USER: appuser
+      MYSQL_PASSWORD: apppass
+      MYSQL_ROOT_PASSWORD: rootpass
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks: [devops-net]
+
+  spring:
+    build: .
+    image: devopsapp:latest
+    container_name: spring_devopsapp
+    ports:
+      - "8082:8082"
+    environment:
+      SERVER_PORT: 8082
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/appdb?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: appuser
+      SPRING_DATASOURCE_PASSWORD: apppass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    depends_on:
+      - mysql
+    networks: [devops-net]
+
+networks:
+  devops-net:
+    external: true
+
+volumes:
+  mysql_data:
