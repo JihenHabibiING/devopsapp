@@ -1,7 +1,6 @@
 services:
   mysql:
     image: mysql:8
-    container_name: mysql_devopsapp
     environment:
       MYSQL_DATABASE: appdb
       MYSQL_USER: appuser
@@ -14,7 +13,6 @@ services:
   spring:
     build: .
     image: devopsapp:latest
-    container_name: spring_devopsapp
     ports:
       - "8082:8082"
     environment:
