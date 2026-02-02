@@ -50,7 +50,7 @@ pipeline {
 
     stage('Deploy (docker-compose Spring + MySQL)') {
       steps {
-        sh 'docker compose up -d --build'
+        sh 'APP_PORT=8083 docker compose up -d --build'
       }
     }
   }
