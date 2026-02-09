@@ -5,6 +5,10 @@ pipeline {
     skipDefaultCheckout(true)
   }
 
+  environment {
+    DOCKER_IMAGE = "jihenhabibi/devopsapp-jihen"
+  }
+
   stages {
     stage('Checkout') {
       steps {
@@ -45,6 +49,18 @@ pipeline {
     stage('Docker Build') {
       steps {
         sh 'docker build -t devopsapp:latest .'
+        sh 'docker tag devopsapp:latest $DOCKER_IMAGE:latest'
+      }
+    }
+
+    stage('Docker Push (DockerHub)') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DH_USER', passwordVariable: 'DH_TOKEN')]) {
+          sh '''
+            echo "$DH_TOKEN" | docker login -u "$DH_USER" --password-stdin
+            docker push $DOCKER_IMAGE:latest
+          '''
+        }
       }
     }
 
